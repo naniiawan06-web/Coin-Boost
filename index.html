@@ -188,23 +188,15 @@
     refId = Math.floor(100000 + Math.random() * 900000);
     localStorage.setItem("ref_id", refId);
   }
-
-  // referral link
-  document.getElementById("refLink").value =
-    "https://naniiawan06-web.github.io/Coin-Boost/?ref=" + refId;
-
-  // Copy Referral Link (same style)
-  function copyReferral() {
-    const copyText = document.getElementById("refLink");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // mobile
-    document.execCommand("copy");
-    document.getElementById('copyMsg').textContent = "Referral link copied!";
-    setTimeout(() => {
-      document.getElementById('copyMsg').textContent = "";
-    }, 3000);
-  }
-</script>
+// Copy Referral Link
+function copyReferral() {
+const copyText = document.getElementById("refLink");
+copyText.select();
+copyText.setSelectionRange(0, 99999); // mobile devices
+document.execCommand("copy");
+document.getElementById('copyMsg').textContent = "Referral link copied!";
+setTimeout(() => { document.getElementById('copyMsg').textContent = ""; }, 3000);
+  
     
     }
 
