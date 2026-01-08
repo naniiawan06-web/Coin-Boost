@@ -2,167 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coin Boost Investment </title>
+<title>Coin Boost </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background:#f0f4f8;
-    margin:0;
-}
-header {
-    background:#ffcc00;
-    padding:20px;
-    text-align:center;
-}
-main {
-    max-width:900px;
-    margin:20px auto;
-    padding:20px;
-    background:#fff;
-    border-radius:10px;
-}
-.section {
-    margin-bottom:25px;
-    padding:15px;
-    border:1px solid #ddd;
-    border-radius:8px;
-}
-input, select, button {
-    width:100%;
-    padding:10px;
-    margin-top:6px;
-}
-button {
-    background:#4CAF50;
-    color:white;
-    border:none;
-    border-radius:5px;
-}
+body{font-family:Arial;background:#f2f2f2;margin:0}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px}
+input,button,select{width:100%;padding:10px;margin-top:6px}
+button{background:#4CAF50;color:#fff;border:none;border-radius:5px}
+h2{background:#ffcc00;padding:10px}
+.section{border:1px solid #ddd;padding:15px;margin-top:20px}
+.hide{display:none}
+.history{font-size:14px;background:#fafafa;padding:10px;margin-top:5px;border:1px solid #ddd}
+.error{color:red}
+.success{color:green}
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>CoinBoost Investment</h1>
-</header>
+<div class="container">
 
-<main>
+<!-- LOGIN / REGISTER -->
+<div id="authBox">
+<h2>Register</h2>
+<input id="r_name" placeholder="Full Name">
+<input id="r_number" placeholder="Mobile Number">
+<input id="r_email" placeholder="Email">
+<input id="r_pass" type="password" placeholder="Password">
+<input id="r_cpass" type="password" placeholder="Confirm Password">
+<button onclick="register()">Register</button>
+<p id="r_msg" class="error"></p>
 
-<section class="section">
+<hr>
+
+<h2>Login</h2>
+<input id="l_user" placeholder="Email or Number">
+<input id="l_pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="l_msg" class="error"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hide">
+
 <h2>Dashboard</h2>
 <p>Balance: <b><span id="balance">0</span></b></p>
-<p>Total Invested: <b><span id="totalInvested">0</span></b></p>
-</section>
+<p>Total Invested: <b><span id="invested">0</span></b></p>
+<button onclick="logout()">Logout</button>
 
-<section class="section">
-<h2>Deposit</h2>
-<input type="text" value="Deposit Via Easypaisa 03485727906" readonly>
-<input type="text" id="depositTrx" placeholder="TRX ID">
-<input type="number" id="depositAmount" placeholder="Amount">
-<button onclick="depositCoins()">Deposit</button>
-<p id="depositMsg"></p>
-</section>
+<!-- DEPOSIT -->
+<div class="section">
+<h3>Deposit</h3>
+<input id="depAmount" type="number" placeholder="Amount">
+<button onclick="deposit()">Deposit</button>
+<p id="depMsg"></p>
+</div>
 
-<section class="section">
-<h2>Invest</h2>
-<input type="number" id="investAmount" placeholder="Investment Amount">
-<button onclick="startInvestment()">Invest Now</button>
-<p id="investMsg"></p>
-</section>
+<!-- INVEST -->
+<div class="section">
+<h3>Invest (1% per second)</h3>
+<input id="invAmount" type="number" placeholder="Amount">
+<button onclick="invest()">Start Invest</button>
+</div>
 
-<section class="section">
-<h2>Withdraw</h2>
-<select id="wallet">
-<option>EasyPaisa</option>
-<option>JazzCash</option>
-</select>
-<input type="text" id="accountName" placeholder="Account Name">
-<input type="text" id="accountNumber" placeholder="Number">
-<input type="number" id="withdrawAmount" placeholder="Amount (Min 2000)">
-<button onclick="withdrawCoins()">Withdraw</button>
-<p id="withdrawMsg"></p>
-</section>
+<!-- WITHDRAW -->
+<div class="section">
+<h3>Withdraw</h3>
+<input id="wdAmount" type="number" placeholder="Min 2000">
+<button onclick="withdraw()">Withdraw</button>
+<p id="wdMsg"></p>
+</div>
 
-<section class="section">
-<h2>Referral</h2>
-<input type="text" id="refLink" readonly>
-<button onclick="copyReferral()">Copy Link</button>
-<p id="copyMsg"></p>
-</section>
+<!-- HISTORIES -->
+<div class="section">
+<h3>Deposit History</h3>
+<div id="depHistory"></div>
+</div>
 
-</main>
+<div class="section">
+<h3>Withdraw History</h3>
+<div id="wdHistory"></div>
+</div>
+
+<div class="section">
+<h3>Earning History</h3>
+<div id="earnHistory"></div>
+</div>
+
+</div>
+</div>
 
 <script>
-let balance = 0;
-let totalInvested = 0;
+// ---------- STORAGE ----------
+let user = JSON.parse(localStorage.getItem("user")) || null;
+let balance = Number(localStorage.getItem("balance")) || 0;
+let invested = Number(localStorage.getItem("invested")) || 0;
+let depHist = JSON.parse(localStorage.getItem("depHist")) || [];
+let wdHist = JSON.parse(localStorage.getItem("wdHist")) || [];
+let earnHist = JSON.parse(localStorage.getItem("earnHist")) || [];
 
-function updateDashboard(){
-document.getElementById("balance").innerText = balance.toFixed(2);
-document.getElementById("totalInvested").innerText = totalInvested.toFixed(2);
-}
-
-// Deposit
-function depositCoins(){
-let amount = parseFloat(document.getElementById("depositAmount").value);
-if(isNaN(amount) || amount < 100){
-alert("Minimum deposit 100");
-return;
-}
-balance += amount;
-document.getElementById("depositMsg").innerText = "Deposit Successful";
-updateDashboard();
+// ---------- AUTH ----------
+function register(){
+let n=r_name.value, num=r_number.value, e=r_email.value, p=r_pass.value, cp=r_cpass.value;
+if(!n||!num||!e||!p||!cp) return r_msg.innerText="All fields required";
+if(p!==cp) return r_msg.innerText="Passwords do not match";
+localStorage.setItem("user",JSON.stringify({n,num,e,p}));
+r_msg.innerText="Registered successfully. Login now.";
 }
 
-// Invest
-function startInvestment(){
-let invest = parseFloat(document.getElementById("investAmount").value);
-if(isNaN(invest) || invest > balance){
-alert("Invalid amount");
-return;
+function login(){
+let u=l_user.value, p=l_pass.value;
+let saved=JSON.parse(localStorage.getItem("user"));
+if(!saved|| (u!==saved.e && u!==saved.num) || p!==saved.p){
+l_msg.innerText="Wrong login details"; return;
 }
-balance -= invest;
-totalInvested += invest;
-updateDashboard();
+document.getElementById("authBox").classList.add("hide");
+document.getElementById("dashboard").classList.remove("hide");
+updateUI();
+}
+
+function logout(){
+location.reload();
+}
+
+// ---------- UI ----------
+function updateUI(){
+balanceEl.innerText=balance.toFixed(2);
+investedEl.innerText=invested.toFixed(2);
+renderHistories();
+}
+
+// ---------- DEPOSIT ----------
+function deposit(){
+let amt=Number(depAmount.value);
+if(amt<100) return depMsg.innerText="Min deposit 100";
+balance+=amt;
+depHist.push(`+${amt} | ${new Date().toLocaleString()} | Pending`);
+save();
+depMsg.innerText="Deposit Pending";
+updateUI();
+}
+
+// ---------- INVEST ----------
+function invest(){
+let amt=Number(invAmount.value);
+if(amt>balance) return alert("Insufficient balance");
+balance-=amt; invested+=amt; save(); updateUI();
 
 setInterval(()=>{
-balance += invest * 0.01;
-updateDashboard();
+let earn=amt*0.01;
+balance+=earn;
+earnHist.push(`+${earn.toFixed(2)} | ${new Date().toLocaleTimeString()}`);
+save(); updateUI();
 },1000);
 }
 
-// Withdraw
-function withdrawCoins(){
-let amount = parseFloat(document.getElementById("withdrawAmount").value);
-if(amount < 2000 || amount > balance){
-alert("Invalid withdraw");
-return;
-}
-balance -= amount;
-document.getElementById("withdrawMsg").innerText = "Withdraw Pending";
-updateDashboard();
+// ---------- WITHDRAW ----------
+function withdraw(){
+let amt=Number(wdAmount.value);
+if(amt<2000||amt>balance) return alert("Invalid withdraw");
+balance-=amt;
+wdHist.push(`-${amt} | ${new Date().toLocaleString()} | Pending`);
+save(); updateUI();
+wdMsg.innerText="Withdraw Pending";
 }
 
-// Referral
-let refId = localStorage.getItem("refid");
-if(!refId){
-refId = Math.floor(100000 + Math.random()*900000);
-localStorage.setItem("refid",refId);
-}
-document.getElementById("refLink").value =
-"https://naniiawan06-web.github.io/Coin-Boost/?ref="+refId;
-
-function copyReferral(){
-let c = document.getElementById("refLink");
-c.select();
-document.execCommand("copy");
-document.getElementById("copyMsg").innerText="Copied!";
+// ---------- SAVE ----------
+function save(){
+localStorage.setItem("balance",balance);
+localStorage.setItem("invested",invested);
+localStorage.setItem("depHist",JSON.stringify(depHist));
+localStorage.setItem("wdHist",JSON.stringify(wdHist));
+localStorage.setItem("earnHist",JSON.stringify(earnHist));
 }
 
-updateDashboard();
+// ---------- HISTORIES ----------
+function renderHistories(){
+depHistory.innerHTML=depHist.map(h=>`<div class="history">${h}</div>`).join("");
+wdHistory.innerHTML=wdHist.map(h=>`<div class="history">${h}</div>`).join("");
+earnHistory.innerHTML=earnHist.map(h=>`<div class="history">${h}</div>`).join("");
+}
+
+// Auto login if already logged
+if(user){
+authBox.classList.add("hide");
+dashboard.classList.remove("hide");
+updateUI();
+}
 </script>
 
 </body>
-</html>
+    </html>
