@@ -40,9 +40,9 @@
     <!-- Deposit Section -->
     <section class="section" id="deposit">
         <h2>Deposit</h2>
-        <p>Minimum deposit: 100 coins</p>
+        <p>Minimum deposit: 200 coins</p>
         <label>Deposit via EasyPaisa:</label>
-        <input type="text" id="depositNumber" value="03409382750" readonly>
+        <input type="text" id="depositNumber" value="03485727906" readonly>
         <input type="text" id="depositTrx" placeholder="Enter TRX ID">
         <input type="number" id="depositAmount" placeholder="Enter deposit amount">
         <button onclick="depositCoins()">Deposit</button>
@@ -173,15 +173,39 @@
         document.getElementById('withdrawMsg').textContent = `Your withdraw of ${amount.toFixed(2)} coins is pending. You will receive it within 24 hours via ${wallet}.`;
         updateDashboard();
     }
+<p><b>Your Referral Link:</b></p>
 
-    // Copy Referral Link
-    function copyReferral() {
-        const copyText = document.getElementById("refLink");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); // mobile devices
-        document.execCommand("copy");
-        document.getElementById('copyMsg').textContent = "Referral link copied!";
-        setTimeout(() => { document.getElementById('copyMsg').textContent = ""; }, 3000);
+<input type="text" id="refLink" readonly style="width:100%;padding:8px;">
+<br><br>
+
+<button onclick="copyReferral()">Copy Link</button>
+<p id="copyMsg" style="color:green;"></p>
+
+<script>
+  // create / keep same referral id
+  let refId = localStorage.getItem("ref_id");
+  if (!refId) {
+    refId = Math.floor(100000 + Math.random() * 900000);
+    localStorage.setItem("ref_id", refId);
+  }
+
+  // referral link
+  document.getElementById("refLink").value =
+    "https://naniiawan06-web.github.io/Coin-Boost/?ref=" + refId;
+
+  // Copy Referral Link (same style)
+  function copyReferral() {
+    const copyText = document.getElementById("refLink");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // mobile
+    document.execCommand("copy");
+    document.getElementById('copyMsg').textContent = "Referral link copied!";
+    setTimeout(() => {
+      document.getElementById('copyMsg').textContent = "";
+    }, 3000);
+  }
+</script>
+    
     }
 
     updateDashboard();
