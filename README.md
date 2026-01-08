@@ -1,2 +1,191 @@
-# Coin-Boost
-This is investment website.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoinBoost Investment Demo</title>
+<style>
+    body { font-family: Arial, sans-serif; background:#f0f4f8; margin:0; padding:0;}
+    header { background:#ffcc00; padding:20px; text-align:center; }
+    header h1 { margin:0; color:#000; }
+    nav a { margin:0 15px; text-decoration:none; font-weight:bold; color:#000; }
+    main { max-width:900px; margin:20px auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
+    h2,h3 { color:#333; }
+    input, select { padding:8px; width:100%; margin:5px 0; border-radius:5px; border:1px solid #ccc; }
+    button { padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:5px; cursor:pointer; margin-top:5px;}
+    button:hover { background:#45a049; }
+    .section { margin-bottom:30px; padding:15px; border:1px solid #ddd; border-radius:8px; }
+    p { margin:5px 0; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>CoinBoost Investment Demo</h1>
+    <nav>
+        <a href="#deposit">Deposit</a> |
+        <a href="#investment">Invest</a> |
+        <a href="#withdraw">Withdraw</a>
+    </nav>
+</header>
+
+<main>
+    <!-- User Balance -->
+    <section class="section">
+        <h2>Dashboard</h2>
+        <p>Your Balance: <span id="balance">0</span> coins</p>
+        <p>Total Invested: <span id="totalInvested">0</span> coins</p>
+    </section>
+
+    <!-- Deposit Section -->
+    <section class="section" id="deposit">
+        <h2>Deposit</h2>
+        <p>Minimum deposit: 100 coins</p>
+        <label>Deposit via EasyPaisa:</label>
+        <input type="text" id="depositNumber" value="03409382750" readonly>
+        <input type="text" id="depositTrx" placeholder="Enter TRX ID">
+        <input type="number" id="depositAmount" placeholder="Enter deposit amount">
+        <button onclick="depositCoins()">Deposit</button>
+        <p id="depositMsg"></p>
+    </section>
+
+    <!-- Investment Section -->
+    <section class="section" id="investment">
+        <h2>Investment Plan</h2>
+        <p>Plan: 1% profit per second, expires in 24 hours</p>
+        <input type="number" id="investAmount" placeholder="Enter amount to invest">
+        <button onclick="startInvestment()">Invest Now</button>
+        <p id="investMsg"></p>
+    </section>
+
+    <!-- Withdraw Section -->
+    <section class="section" id="withdraw">
+        <h2>Withdraw</h2>
+        <label>Select Wallet:</label>
+        <select id="wallet">
+            <option value="EasyPaisa">EasyPaisa</option>
+            <option value="JazzCash">JazzCash</option>
+        </select>
+        <input type="text" id="accountName" placeholder="Account Name">
+        <input type="text" id="accountNumber" placeholder="Your Number">
+        <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw (Min 2000)">
+        <button onclick="withdrawCoins()">Confirm Withdraw</button>
+        <p id="withdrawMsg"></p>
+    </section>
+
+    <!-- Referral Section -->
+    <section class="section" id="referral">
+        <h2>Referral Link</h2>
+        <p>Share your referral link to earn rewards:</p>
+        <input type="text" id="refLink" value="https://coinboost.demo?ref=YOURID" readonly>
+        <button onclick="copyReferral()">Copy Link</button>
+        <p id="copyMsg"></p>
+    </section>
+</main>
+
+<footer style="text-align:center; padding:10px; background:#333; color:white;">
+    © 2026 CoinBoost Demo
+</footer>
+
+<script>
+    let balance = 0;
+    let totalInvested = 0;
+    let investmentInterval;
+
+    function updateDashboard() {
+        document.getElementById('balance').textContent = balance.toFixed(2);
+        document.getElementById('totalInvested').textContent = totalInvested.toFixed(2);
+    }
+
+    // Deposit Simulation
+    function depositCoins() {
+        const trx = document.getElementById('depositTrx').value;
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+
+        if(trx === "" || isNaN(amount)) {
+            alert("Please fill all deposit fields!");
+            return;
+        }
+        if(amount < 100) {
+            document.getElementById('depositMsg').textContent = "Minimum deposit is 100 coins.";
+            return;
+        }
+
+        balance += amount;
+        document.getElementById('depositMsg').textContent = `Deposit successful! TRX ID: ${trx}`;
+        updateDashboard();
+    }
+
+    // Investment Simulation
+    function startInvestment() {
+        const invest = parseFloat(document.getElementById('investAmount').value);
+        if(isNaN(invest) || invest > balance) {
+            alert("Invalid investment amount!");
+            return;
+        }
+
+        balance -= invest;
+        totalInvested += invest;
+        updateDashboard();
+        document.getElementById('investMsg').textContent = "Investment started! Profit will be added per second.";
+
+        let seconds = 0;
+        const maxSeconds = 24 * 60 * 60; // 24 hours in seconds
+
+        investmentInterval = setInterval(() => {
+            if(seconds >= maxSeconds) {
+                clearInterval(investmentInterval);
+                totalInvested -= invest;
+                document.getElementById('investMsg').textContent = "Investment expired!";
+                updateDashboard();
+            } else {
+                let profit = invest * 0.01; // 1% per second
+                balance += profit;
+                updateDashboard();
+                seconds++;
+            }
+        }, 1000); // every second
+    }
+
+    // Withdraw Simulation with Pending Message
+    function withdrawCoins() {
+        const wallet = document.getElementById('wallet').value;
+        const name = document.getElementById('accountName').value;
+        const number = document.getElementById('accountNumber').value;
+        const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+        if(wallet === "" || name === "" || number === "" || isNaN(amount)) {
+            alert("Please fill all withdraw fields!");
+            return;
+        }
+
+        if(amount < 2000) {
+            document.getElementById('withdrawMsg').textContent = "Minimum withdraw amount is 2000 coins.";
+            return;
+        }
+
+        if(amount > balance) {
+            document.getElementById('withdrawMsg').textContent = "Insufficient balance!";
+            return;
+        }
+
+        balance -= amount;
+        document.getElementById('withdrawMsg').textContent = `Your withdraw of ${amount.toFixed(2)} coins is pending. You will receive it within 24 hours via ${wallet}.`;
+        updateDashboard();
+    }
+
+    // Copy Referral Link
+    function copyReferral() {
+        const copyText = document.getElementById("refLink");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // mobile devices
+        document.execCommand("copy");
+        document.getElementById('copyMsg').textContent = "Referral link copied!";
+        setTimeout(() => { document.getElementById('copyMsg').textContent = ""; }, 3000);
+    }
+
+    updateDashboard();
+</script>
+
+</body>
+</html>
