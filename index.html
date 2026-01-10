@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Home | 3X Profit Investment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:#fff;
+  padding-bottom:70px;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+  background:#020617;
+}
+.header i{
+  font-size:22px;
+  color:#22c55e;
+}
+.balance{
+  font-weight:bold;
+}
+.boxes{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:15px;
+}
+.box{
+  background:#020617;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+.box h3{
+  margin:5px 0;
+  font-size:14px;
+  color:#94a3b8;
+}
+.box p{
+  margin:0;
+  font-size:18px;
+  color:#22c55e;
+}
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#020617;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+}
+.nav a{
+  color:#94a3b8;
+  text-decoration:none;
+  font-size:12px;
+  text-align:center;
+}
+.nav i{
+  display:block;
+  font-size:20px;
+  margin-bottom:3px;
+}
+.nav a.active{
+  color:#22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+  <a href="https://wa.me/923105403991" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+  <div class="balance">
+    Balance: ₨ <span id="balance">0</span>
+  </div>
+</div>
+
+<!-- Top Boxes -->
+<div class="boxes">
+  <div class="box">
+    <h3>Total Investment</h3>
+    <p id="totalInvestment">0</p>
+  </div>
+  <div class="box">
+    <h3>Today Earning</h3>
+    <p id="todayEarning">0</p>
+  </div>
+  <div class="box">
+    <h3>Total Earning</h3>
+    <p id="totalEarning">0</p>
+  </div>
+  <div class="box">
+    <h3>Total Withdraw</h3>
+    <p id="totalWithdraw">0</p>
+  </div>
+</div>
+
+<!-- Pending Boxes -->
+<div class="boxes">
+  <div class="box">
+    <h3>Pending Deposit</h3>
+    <p id="pendingDeposit">0</p>
+  </div>
+  <div class="box">
+    <h3>Pending Withdraw</h3>
+    <p id="pendingWithdraw">0</p>
+  </div>
+</div>
+
+<!-- Total Boxes -->
+<div class="boxes">
+  <div class="box">
+    <h3>Total Deposit</h3>
+    <p id="totalDeposit">0</p>
+  </div>
+  <div class="box">
+    <h3>Total Withdraw</h3>
+    <p id="totalWithdraw2">0</p>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="nav">
+  <a href="home.html" class="active">
+    <i class="fa fa-house"></i>
+    Home
+  </a>
+  <a href="deposit.html">
+    <i class="fa fa-circle-plus"></i>
+    Deposit
+  </a>
+  <a href="withdraw.html">
+    <i class="fa fa-circle-minus"></i>
+    Withdraw
+  </a>
+  <a href="plans.html">
+    <i class="fa fa-layer-group"></i>
+    Plans
+  </a>
+  <a href="me.html">
+    <i class="fa fa-user"></i>
+    Me
+  </a>
+</div>
+
+<script>
+// Login check
+let userKey = localStorage.getItem("loggedUser");
+if(!userKey){
+  window.location="index.html";
+}
+
+// Load user data
+let user = JSON.parse(localStorage.getItem("user_"+userKey));
+
+// Demo values
+document.getElementById("balance").innerText = user.balance || 0;
+document.getElementById("totalInvestment").innerText = user.deposit || 0;
+document.getElementById("totalDeposit").innerText = user.deposit || 0;
+document.getElementById("totalWithdraw").innerText = user.withdraw || 0;
+document.getElementById("totalWithdraw2").innerText = user.withdraw || 0;
+
+// Demo earnings
+document.getElementById("todayEarning").innerText = 0;
+document.getElementById("totalEarning").innerText = 0;
+document.getElementById("pendingDeposit").innerText = 0;
+document.getElementById("pendingWithdraw").innerText = 0;
+</script>
+
+</body>
+</html>
